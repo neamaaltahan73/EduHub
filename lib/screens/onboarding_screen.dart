@@ -3,6 +3,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../core/const/data/onboarding_data.dart';
 import '../core/const/widgets/onboarding_page_widget.dart';
+import 'login_screen.dart' show EduHubLoginPage;
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -13,7 +14,6 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
-
   int _currentIndex = 0;
 
   @override
@@ -29,8 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Home Screen'))),
+          builder: (_) => const EduHubLoginPage(),
         ),
       );
     } else {
@@ -39,8 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     }
-  }
-
+  } 
   @override
   Widget build(BuildContext context) {
     final bool isLastPage = _currentIndex == onboardingPages.length - 1;
@@ -64,7 +62,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-
             SmoothPageIndicator(
               controller: _pageController,
               count: onboardingPages.length,
@@ -75,9 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 dotColor: Color(0xFFDDDDDD),
               ),
             ),
-
             const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: SizedBox(
@@ -107,4 +102,4 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
-}
+} 
