@@ -35,7 +35,8 @@ class EduHubLoginPage extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(14),
                     child: Image.asset(
-                      'assets/Utilizing Material Symbol as instructed, representing academic rigor@3x.png', // مثال: 'assets/images/edu_logo_png'
+                      'assets/Utilizing Material Symbol as instructed, representing academic rigor@3x.png', 
+                      
 
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
