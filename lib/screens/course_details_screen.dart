@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../core/const/colors/app_colors.dart';
-import '../core/const/data/course_details_data.dart';
+import '../core/const/widgets/app_network_image.dart';
+import '../logic/favorites/favorites_bloc.dart';
+import '../models/course_model.dart';
+import '../logic/cart/cart_bloc.dart';
 
-class CourseDetailsScreen extends StatefulWidget {
-  const CourseDetailsScreen({super.key});
+class CourseDetailsScreen extends StatelessWidget {
+  final CourseModel course;
 
-  @override
-  State<CourseDetailsScreen> createState() => _CourseDetailsScreenState();
-}
-
-class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
-  bool _isFavorite = false;
+  const CourseDetailsScreen({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
@@ -41,38 +40,10 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset(
-                      CourseDetailsData.videoThumbnail,
+                    AppNetworkImage(
+                      url: course.image,
                       width: double.infinity,
                       height: 190,
-                      fit: BoxFit.cover,
-                    ),
-                    Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.play_arrow,
-                        color: AppColors.primaryBlue,
-                        size: 30,
-                      ),
-                    ),
-                    const Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Text(
-                        'Preview',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(color: Colors.black54, blurRadius: 4),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -82,35 +53,28 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Wrap(
-                        spacing: 8,
-                        children: CourseDetailsData.tags
-                            .map(
-                              (tag) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryBlue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  tag,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.primaryBlue,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBlue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          course.category,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 10),
 
-                      const Text(
-                        CourseDetailsData.title,
-                        style: TextStyle(
+                      Text(
+                        course.title,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDark,
@@ -133,38 +97,13 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                '${CourseDetailsData.rating} (${CourseDetailsData.ratingsCount} ratings)',
+                                '${course.rating} (${course.studentsLabel})',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: AppColors.textGrey,
                                 ),
                               ),
                             ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.people_outline,
-                                size: 15,
-                                color: AppColors.textGrey,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                '${CourseDetailsData.studentsCount} Students',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textGrey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            CourseDetailsData.lastUpdated,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textGrey,
-                            ),
                           ),
                         ],
                       ),
@@ -174,87 +113,155 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         children: [
                           const CircleAvatar(
                             radius: 22,
-                            backgroundImage: AssetImage(
-                              CourseDetailsData.instructorImage,
+                            backgroundColor: AppColors.divider,
+                            child: Icon(
+                              Icons.person,
+                              color: AppColors.textGrey,
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                CourseDetailsData.instructorName,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textDark,
-                                ),
+                          Expanded(
+                            child: Text(
+                              course.instructor,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textDark,
                               ),
-                              Text(
-                                CourseDetailsData.instructorTitle,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textGrey,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      if (course.lastUpdated != null &&
+                          course.lastUpdated!.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'Last updated ${course.lastUpdated}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                      ],
 
-                      const Text(
-                        'Course Description',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                      if (course.description != null &&
+                          course.description!.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Course Description',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        CourseDetailsData.description,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textGrey,
-                          height: 1.5,
+                        const SizedBox(height: 8),
+                        Text(
+                          course.description!,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textGrey,
+                            height: 1.5,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'What you will learn',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                      ],
+
+                      if (course.whatYouWillLearn.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        const Text(
+                          'What you will learn',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      ...CourseDetailsData.whatYouWillLearn.map(
-                        (point) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.check_circle,
-                                color: AppColors.primaryBlue,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  point,
+                        const SizedBox(height: 10),
+                        ...course.whatYouWillLearn.map(
+                          (point) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primaryBlue,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    point,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: AppColors.textDark,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      if (course.reviews.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Reviews',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ...course.reviews.map(
+                          (review) => Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackground,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: AppColors.divider),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      review.reviewerName,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textDark,
+                                      ),
+                                    ),
+                                    Text(
+                                      review.reviewDate,
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textGrey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  review.reviewContent,
                                   style: const TextStyle(
-                                    fontSize: 13,
-                                    color: AppColors.textDark,
+                                    fontSize: 12,
+                                    color: AppColors.textGrey,
                                     height: 1.4,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -270,56 +277,73 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
             ),
             child: Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '\$${CourseDetailsData.oldPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey,
-                        decoration: TextDecoration.lineThrough,
-                      ),
+                Expanded(
+                  child: Text(
+                    '\$${course.price.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryBlue,
                     ),
-                    Text(
-                      '\$${CourseDetailsData.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryBlue,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 const SizedBox(width: 12),
-                IconButton(
-                  onPressed: () => setState(() => _isFavorite = !_isFavorite),
-                  icon: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? AppColors.danger : AppColors.textDark,
-                  ),
-                  style: IconButton.styleFrom(
-                    side: const BorderSide(color: AppColors.divider),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                BlocBuilder<FavoritesBloc, FavoritesState>(
+                  builder: (context, state) {
+                    final isFavorite =
+                        state is FavoritesLoaded && state.isFavorite(course.id);
+                    return IconButton(
+                      onPressed: () => context
+                          .read<FavoritesBloc>()
+                          .add(ToggleFavoriteRequested(course.id)),
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite
+                            ? AppColors.danger
+                            : AppColors.textDark,
+                      ),
+                      style: IconButton.styleFrom(
+                        side: const BorderSide(color: AppColors.divider),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Add to Cart',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  child: BlocBuilder<CartBloc, CartState>(
+                    builder: (context, state) {
+                      final isInCart =
+                          state is CartLoaded && state.isInCart(course.id);
+                      return ElevatedButton(
+                        onPressed: isInCart
+                            ? null
+                            : () {
+                                context
+                                    .read<CartBloc>()
+                                    .add(AddToCartRequested(course.id));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('تمت الإضافة إلى السلة'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          isInCart ? 'Added to Cart' : 'Add to Cart',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

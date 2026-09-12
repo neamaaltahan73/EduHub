@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import '../../models/instructor_model.dart';
+import '../../../models/instructor_model.dart';
 import '../colors/app_colors.dart';
 
 class InstructorAvatar extends StatelessWidget {

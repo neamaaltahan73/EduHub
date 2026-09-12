@@ -1,5 +1,4 @@
-// lib/models/onboarding_model.dart
-//
+
 class OnboardingModel {
   final String image;
   final String title;

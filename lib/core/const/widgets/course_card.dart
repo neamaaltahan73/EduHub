@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/course_model.dart';
+import '../../../models/course_model.dart';
 import '../colors/app_colors.dart';
+import 'app_network_image.dart';
 
 class CourseCard extends StatelessWidget {
   final CourseModel course;
@@ -38,11 +39,10 @@ class CourseCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Image.asset(
-                  course.image,
+                AppNetworkImage(
+                  url: course.image,
                   height: 90,
                   width: double.infinity,
-                  fit: BoxFit.cover,
                 ),
                 Positioned(
                   top: 8,
