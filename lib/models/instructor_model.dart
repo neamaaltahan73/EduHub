@@ -1,5 +1,3 @@
-// lib/models/instructor_model.dart
-
 class InstructorModel {
   final String image;
   final String name;

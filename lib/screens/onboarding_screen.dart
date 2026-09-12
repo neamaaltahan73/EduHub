@@ -3,6 +3,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../core/const/data/onboarding_data.dart';
 import '../core/const/widgets/onboarding_page_widget.dart';
+import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -28,10 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (isLastPage) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Home Screen'))),
-        ),
+        MaterialPageRoute(builder: (_) => const EduHubLoginPage()),
       );
     } else {
       _pageController.nextPage(

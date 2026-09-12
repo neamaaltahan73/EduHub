@@ -1,7 +1,7 @@
 
 
 import 'package:flutter/material.dart';
-import '../../models/continue_learning_model.dart';
+import '../../../models/continue_learning_model.dart';
 import '../colors/app_colors.dart';
 
 

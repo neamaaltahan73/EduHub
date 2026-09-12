@@ -1,9 +1,6 @@
-// lib/widgets/category_chip.dart
-
 import 'package:flutter/material.dart';
 
 import '../colors/app_colors.dart';
-
 
 class CategoryChip extends StatelessWidget {
   final String label;
